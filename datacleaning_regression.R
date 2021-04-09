@@ -44,13 +44,13 @@ plot(leastSquares, 1) #fat in the middle
 gqtest(formula = leastSquares, fraction = .2) # https://www.statisticshowto.com/goldfeld-quandt-test/
 
 #Independence: players on different teams are probably independent players on the same team may be trained in similar ways 
-
 #check for autocorrelation
 dwtest(formula = leastSquares) #https://www.statisticshowto.com/durbin-watson-test-coefficient/
 # https://www.itl.nist.gov/div898/handbook/eda/section3/eda35c.htm
 
 #check for normality
 ggqqplot(leastSquares$residuals)
+ks.test(x=leastSquares$residuals, y = pnorm, alternative = "two.sided")
 
 #### Multiple Linear Regression #####
 strikeoutManyVariables <- read.csv(paste0(currentDirectory, "/strikeout_many_variables.csv"))
