@@ -56,3 +56,21 @@ coef(best_model)
 plot(model, xvar = "lambda")
 
 #LASOO REGRESSION
+#https://www.statology.org/lasso-regression-in-r/
+lasooo_model <- glmnet(x, y, alpha = 1)
+summary(lasooo_model)
+
+##perform k-fold cross-validation to find optimal lambda value
+cv_model2 <- cv.glmnet(x, y, alpha = 1)
+
+#find optimal lambda value that minimizes test MSE
+best_lambda2 <- cv_model2$lambda.min
+best_lambda2 #1.195782
+
+#produce plot of test MSE by lambda value
+plot(cv_model2)
+
+#look at the best model
+best_model2 <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+coef(best_model2)
+
