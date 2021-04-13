@@ -7,13 +7,17 @@ library(lmtest)
 library(glmnet)
 library(caret)
 library(randomForest)
+library(boot)
 #MULTIPLE LINEAR REGRESSION
 multi_data <- read.csv("C:/Users/18083/Desktop/202110/Sports Analytics/Baseball/strikeout_many_variables.csv")
+
 multi_data$percent_strikeout <- 100*(multi_data$p_strikeout/multi_data$p_total_pa)
 multi_data <- multi_data %>%
   select(c(percent_strikeout, ff_avg_speed, ff_avg_spin, ff_avg_break_x, ff_avg_break_z))
 multi_data <- multi_data[complete.cases(multi_data),]
 multi_model <- lm(percent_strikeout~ ff_avg_speed + ff_avg_spin + ff_avg_break_x +ff_avg_break_z, data=multi_data )
+
+#looking at the summary of the normal 
 summary(multi_model)
 #Adjusted R-squared:  0.1877 
 #Residual Standard Error: 6.304 on 442 degrees of freedom
@@ -31,6 +35,16 @@ mydata.p = mydata.rcorr$P
 
 mydata.coeff
 mydata.p #got some issues
+
+#bootstrapping (this is professor hartlaub's code from STAT226)
+f4<-function(data, i, formula) {
+  d=data[i,]
+  model<-lm(formula, data=d)
+  coef(model)
+}
+bootlm<-boot(data=multi_data, f4, R=1000, formula=multi_model)
+#Take a look at bootlm.
+boot.ci(bootlm, type="all", index = 4)
 
 #RIDGE REGESSION
 #https://www.statology.org/ridge-regression-in-r/
@@ -92,7 +106,7 @@ ridge_cv <- train(x, y, alpha = 0, lambda = best_lambda, trControl = ctrl)
 linear_cv <- train(percent_strikeout~., data=multi_data, method="lm", trControl = ctrl)
 
 #view summary of k-fold CV               
-print(lassoo_cv) # 2    6.579732  0.1489319  5.178836
-print(ridge_cv) # 2     6.552741  0.1488891  5.165473 
-print(linear_cv) #      6.330036  0.2051039  4.936704
+print(lassoo_cv) #    6.579732  0.1489319  5.178836
+print(ridge_cv) #     6.552741  0.1488891  5.165473 
+print(linear_cv) #    6.330036  0.2051039  4.936704
 
