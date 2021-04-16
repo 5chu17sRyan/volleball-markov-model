@@ -44,7 +44,25 @@ f4<-function(data, i, formula) {
 }
 bootlm<-boot(data=multi_data, f4, R=1000, formula=multi_model)
 #Take a look at bootlm.
-boot.ci(bootlm, type="all", index = 4)
+boot.ci(bootlm, type="all", index = 4) 
+bootlm
+
+#backwards regression (https://www.statology.org/stepwise-regression-r/)
+#define intercept-only model
+intercept_only <- lm(percent_strikeout ~ 1, data=multi_data)
+
+#define model with all predictors
+all <- lm(percent_strikeout ~ ., data=multi_data)
+
+#perform backward stepwise regression
+backward <- step(all, direction='backward', scope=formula(all), trace=0)
+
+#view results of backward stepwise regression
+backward$anova
+
+# Step Df Deviance Resid. Df Resid. Dev     AIC
+#1      NA       NA       442   17563.68 1650.95
+#so don't remove not sig term
 
 #RIDGE REGESSION
 #https://www.statology.org/ridge-regression-in-r/
